@@ -3,6 +3,7 @@
 //
 //
 //  Created by 안창범 on 2020/12/01.
+//  Modified by kasimok to support macos
 //
 
 import ArgumentParser

@@ -4,7 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "FFmpeg-macOS",
-    platforms: [.iOS(.v9)],
+    platforms: [.macOS(.v10_12)],
     products: [
         .library(
             name: "FFmpeg-macOS",
