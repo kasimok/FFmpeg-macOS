@@ -16,8 +16,8 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.3.0"),
     ],
     targets: [
-        .binaryTarget(name: "avcodec", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.01/avcodec.zip", checksum: "a1928af96dffd41b8c8fa05ec2b4f6b0795a7b64f909a3e625f36626ebfda169"),
-        .binaryTarget(name: "avutil", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.01/avutil.zip", checksum: "1e96a3d0847fd9471b71eb8681c385bff888d4a35df42a4af4aa7a1e0491a9a9"),
+        .binaryTarget(name: "avcodec", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.01/avcodec.zip", checksum: "f5414bf5d42906161c1f9d8cda0abd2b09acdd20782b2b8b15b66b2150cf6cc3"),
+        .binaryTarget(name: "avutil", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.01/avutil.zip", checksum: "a4acdbb3b02a900a0acbf827c889ed37ce2ddd74313e7053dc5de88d53bd609d"),
         .binaryTarget(name: "avformat", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.01/avformat.zip", checksum: "4772a0dc37fbc5c82737f6345aad6ed2043907bc13afca0e6ce0c72cdeaa5cc5"),
         .binaryTarget(name: "avfilter", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.01/avfilter.zip", checksum: "311282c13527622c5cadad1730e0da2e707a9f9b802586b02d9737ee45655120"),
         .binaryTarget(name: "avdevice", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.01/avdevice.zip", checksum: "ca4f806c0e6c4414abd7e262895b70641831e1193bb78b69618bb20b7c2f4a70"),
