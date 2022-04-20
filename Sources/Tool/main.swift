@@ -82,7 +82,7 @@ struct XCFrameworkOptions: ParsableArguments {
 
 struct DownloadOptions: ParsableArguments {
     @Option(help: "FFmpeg release")
-    var release = "snapshot"
+    var release = "4.4.2"
 
     @Option
     var url: String?
