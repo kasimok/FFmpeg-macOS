@@ -3,7 +3,7 @@
 //
 //
 //  Created by 안창범 on 2020/12/01.
-//  Modified by kasimok to support macos
+//  Modified by kasimok to support macos and libvpx
 //
 
 import ArgumentParser
@@ -106,7 +106,7 @@ struct LameOptions: ParsableArguments {
 
 struct VPXOptions: ParsableArguments {
     @Option
-    var vpxSource = "./libvpx-1.9.0"
+    var vpxSource = "./libvpx-1.11.1"
 }
 
 extension Tool {
@@ -375,17 +375,19 @@ extension Tool {
                 var options: [String] {
                     [
                         "--prefix=\(installPrefix)",
-                        "--enable-vp8",
+//                        "--enable-vp8",
                         "--enable-postproc",
-                        "--enable-vp9-postproc",
-                        "--enable-vp9-highbitdepth",
-                        "--disable-examples",
-                        "--disable-docs",
-                        "--enable-multi-res-encoding",
-                        "--disable-unit-tests",
+//                        "--enable-vp9-postproc",
+//                        "--enable-vp9-highbitdepth",
+//                        "--disable-examples",
+//                        "--disable-docs",
+//                        "--enable-multi-res-encoding",
+//                        "--disable-unit-tests",
                         "--enable-pic",
-                        "--extra-cflags=\(cFlags)",
-                        "--disable-shared"
+//                        "--extra-cflags=\(cFlags)",
+                        "--enable-cross-compile",
+                        "--disable-shared",
+                        "--arch=\(arch)"
                     ]
                 }
 
@@ -400,17 +402,17 @@ extension Tool {
             }
             
             try buildLibrary(name: "vpx", sourceDirectory: sourceDirectory, arch: buildOptions.arch, deploymentTarget: configureOptions.deploymentTarget, buildDirectory: buildOptions.buildDirectory, configuration: VPXConfiguration.self)
-
         }
         
         
         
 
         func buildLibrary<T>(name: String, sourceDirectory: String, arch: [String], deploymentTarget: String, buildDirectory: String, configuration: T.Type, customize: (T) -> [String] = { $0.options }) throws where T: Configuration {
+            print("🛠: Building library: \(name)")
             let buildDir = URL(fileURLWithPath: buildDirectory)
                 .appendingPathComponent(name)
             for archx in arch {
-                print("building \(archx)...")
+                print("🎭: Building for \(archx)...")
                 let archDir = buildDir.appendingPathComponent(archx)
                 try createDirectory(at: archDir.path)
 
@@ -457,6 +459,7 @@ extension Tool {
                     ln -sf \(prefix.path)/include/* \(include)
                     ln -sf \(prefix.path)/lib/* \(lib)
                     """)
+                print("✅: Successfully built library: \(name)")
             }
         }
     }
