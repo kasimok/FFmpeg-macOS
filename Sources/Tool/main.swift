@@ -39,7 +39,7 @@ struct SourceOptions: ParsableArguments {
         FileManager.default.fileExists(atPath: sourceURL.appendingPathComponent("configure").path)
     }
 
-    @Argument(help: "ffmpeg, fdk-aac, lame or x264")
+    @Argument(help: "ffmpeg, fdk-aac, vpx, lame or x264")
     var lib = "ffmpeg"
 }
 
@@ -103,6 +103,12 @@ struct LameOptions: ParsableArguments {
     var lameSource = "./lame-3.100"
 }
 
+
+struct VPXOptions: ParsableArguments {
+    @Option
+    var vpxSource = "./libvpx-1.9.0"
+}
+
 extension Tool {
     struct BuildCommand: ParsableCommand {
         static var configuration = CommandConfiguration(commandName: "build", abstract: "Build framework module")
@@ -112,6 +118,10 @@ extension Tool {
 
         @Flag(help: "enable H.264 encoding via x264")
         var enableLibx264 = false
+        
+        @Flag(help: "enable VP9 encoding via libvpx")
+        /// see https://trac.ffmpeg.org/wiki/Encode/VP9 about more encoding supports
+        var enableLibvpx = false
 
         @Flag(help: "enable MP3 encoding via libmp3lame")
         var enableLibmp3lame = false
@@ -135,6 +145,7 @@ extension Tool {
         @OptionGroup var fdkAacOptions: FdkAacOptions
         @OptionGroup var x264Options: X264Options
         @OptionGroup var lameOptions: LameOptions
+        @OptionGroup var vpxOptions: VPXOptions
 
         mutating func run() throws {
             try DepCommand().run()
@@ -155,6 +166,12 @@ extension Tool {
                 try build(lib: "x264", sourceDirectory: "./x264")
 
                 configureOptions.extraOptions += ["--enable-libx264", "--enable-gpl",]
+            }
+            
+            if enableLibvpx {
+                try build(lib: "vpx", sourceDirectory: "./vpx")
+                
+                configureOptions.extraOptions += ["--enable-libvpx",]
             }
 
             try build(lib: sourceOptions.lib, sourceDirectory: sourceOptions.sourceURL.path)
@@ -216,6 +233,8 @@ extension Tool {
                 try buildLame(sourceDirectory: sourceDirectory)
             case "x264":
                 try buildX264(sourceDirectory: sourceDirectory)
+            case "vpx":
+                try buildVPX(sourceDirectory: sourceDirectory)
             default:
                 throw ExitCode.failure
             }
@@ -347,6 +366,45 @@ extension Tool {
 
             try buildLibrary(name: "x264", sourceDirectory: sourceDirectory, arch: buildOptions.arch, deploymentTarget: configureOptions.deploymentTarget, buildDirectory: buildOptions.buildDirectory, configuration: X264Configuration.self)
         }
+        
+        
+        func buildVPX(sourceDirectory: String) throws {
+            class VPXConfiguration: ConfigurationHelper, Configuration {
+                override var cc: String { "xcrun -sdk \(sdk) clang -arch \(arch)" }
+
+                var options: [String] {
+                    [
+                        "--prefix=\(installPrefix)",
+                        "--enable-vp8",
+                        "--enable-postproc",
+                        "--enable-vp9-postproc",
+                        "--enable-vp9-highbitdepth",
+                        "--disable-examples",
+                        "--disable-docs",
+                        "--enable-multi-res-encoding",
+                        "--disable-unit-tests",
+                        "--enable-pic",
+                        "--extra-cflags=\(cFlags)",
+                        "--disable-shared"
+                    ]
+                }
+
+                override var environment: [String : String]? {
+                    [
+                        "CC": cc,
+                        "CPP": "\(cc) -E",
+                        "CFLAGS": cFlags,
+                        "LDFLAGS": ldFlags,
+                    ]
+                }
+            }
+            
+            try buildLibrary(name: "vpx", sourceDirectory: sourceDirectory, arch: buildOptions.arch, deploymentTarget: configureOptions.deploymentTarget, buildDirectory: buildOptions.buildDirectory, configuration: VPXConfiguration.self)
+
+        }
+        
+        
+        
 
         func buildLibrary<T>(name: String, sourceDirectory: String, arch: [String], deploymentTarget: String, buildDirectory: String, configuration: T.Type, customize: (T) -> [String] = { $0.options }) throws where T: Configuration {
             let buildDir = URL(fileURLWithPath: buildDirectory)
@@ -456,6 +514,8 @@ extension Tool {
                 return "https://sourceforge.net/projects/lame/files/latest/download"
             case "x264":
                 return "https://code.videolan.org/videolan/x264/-/archive/master/x264-master.tar.bz2"
+            case "vpx":
+                return "https://github.com/webmproject/libvpx/archive/v1.11.0.tar.gz"//TODO: update to latest
             default:
                 fatalError("unknown library: \(sourceOptions.lib)")
             }
