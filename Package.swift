@@ -9,7 +9,7 @@ let package = Package(
         .library(
             name: "FFmpeg-macOS",
             targets: [
-                "avcodec", "avutil", "avformat", "avfilter", "swscale", "swresample", "Depend"]),
+                "libavcodec", "libavutil", "libavformat", "libavfilter", "libswscale", "libswresample", "Depend"]),
         .executable(name: "ffmpeg-macos", targets: ["Tool"]),
     ],
     dependencies: [
