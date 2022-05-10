@@ -3,26 +3,47 @@
 import PackageDescription
 
 let package = Package(
-    name: "FFmpeg-macOS",
+    name: "FFmpegKit",
     platforms: [.macOS(.v10_12)],
     products: [
         .library(
             name: "FFmpeg-macOS",
-            targets: [
-                "libavcodec", "libavutil", "libavformat", "libavfilter", "libswscale", "libswresample", "Depend"]),
+            targets: ["ffmpegkit",
+                      "libavcodec",
+                      "libavutil",
+                      "libavdevice",
+                      "libavformat",
+                      "libavfilter",
+                      "libswscale",
+                      "libswresample",
+                      "Depend"]),
         .executable(name: "ffmpeg-macos", targets: ["Tool"]),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-argument-parser", from: "0.3.0"),
     ],
     targets: [
-        .binaryTarget(name: "libavcodec", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.5/avcodec.zip", checksum: "28ee95f74b13a6115107a5e5545364e092c32ab19c8ad337771a231dd51c2d1b"),
-        .binaryTarget(name: "libavutil", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.5/avutil.zip", checksum: "cbad714845d729f1743cfa14abb84604fed4df0505f492711dc79d746c25d1fb"),
-        .binaryTarget(name: "libavformat", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.5/avformat.zip", checksum: "fed613b37985889c0239afaca5fec9c859740d710fe315d5f52e8fb2c4619dd7"),
-        .binaryTarget(name: "libavfilter", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.5/avfilter.zip", checksum: "0767107807028a2cc91659ec9f730f430f3ebd28fa8171ba85715b9925320868"),
-        .binaryTarget(name: "libavdevice", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.5/avdevice.zip", checksum: "15b3f685b5224a7c85f4466d603b86bf85ddefa4f2f64dfab71c59c78796d8d6"),
-        .binaryTarget(name: "libswscale", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.5/swscale.zip", checksum: "44871fae5ade40aa231aa95b8a4abb584f1dfdd6bd481d968db730b2e461124c"),
-        .binaryTarget(name: "libswresample", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.5/swresample.zip", checksum: "74e6087dab9ba1cd3aab3ad4a2a0b9ea5aebda72901641a153b40caa21907e9f"),
+        /* prebuild ffmpeg with below command
+         ./macos.sh --enable-freetype \
+         --enable-gpl \
+         --enable-libvpx \
+         --enable-macos-avfoundation \
+         --enable-srt \
+         --xcframework \
+         --enable-x264 \
+         --lts
+         */
+        
+        
+        .binaryTarget(name: "ffmpegkit", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/ffmpegkit.zip", checksum: "b9b0dd85c04e6fc1868b9f4c8ce462a7696aa107d0d5f3ec8bb61979fdc680f3"),
+        .binaryTarget(name: "libavcodec", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/avcodec.zip", checksum: "10552392cb35b095d7d965529fb7f2578ee1d96295dbef77efe44d85427b55b3"),
+        .binaryTarget(name: "libavutil", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/avutil.zip", checksum: "8d1d2c8420ad198e437294e6dae20c6ecb28e5da19064e7ccba7ff7581d03b92"),
+        .binaryTarget(name: "libavformat", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/avformat.zip", checksum: "a91b9681277994cb1d4734c103bb11b40ab758909b6351d8a2516b8de0e0ecea"),
+        .binaryTarget(name: "libavfilter", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/avfilter.zip", checksum: "594df6435e0379113174f65bbcfd5e859060a38cc74fc9bed5794360ed5cf2f2"),
+        .binaryTarget(name: "libavdevice", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/avdevice.zip", checksum: "909db22873069b5beaba19cae491a823e5b3ec202e20989bfd8b7389633098e7"),
+        .binaryTarget(name: "libswscale", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/swscale.zip", checksum: "d8cc5708415f5373578a986a6fc6753af95416d4cb22dd617dd54fd31489fae8"),
+        .binaryTarget(name: "libswresample", url: "https://github.com/kasimok/FFmpeg-macOS/releases/download/0.0.7/swresample.zip", checksum: "756ed6928c1b19faa503e585c9cc80337b9bc968fbf2f0d24f023726edfd80e6"),
+        
         .target(name: "Tool", dependencies: [
             .product(name: "ArgumentParser", package: "swift-argument-parser"),
         ]),
@@ -31,7 +52,10 @@ let package = Package(
                     .linkedLibrary("z"),
                     .linkedLibrary("bz2"),
                     .linkedLibrary("iconv"),
+                    .linkedLibrary("c++"),
                 ]
-        ),
+               ),
     ]
 )
+
+
